@@ -7,8 +7,8 @@ import "./ERC721Tradable.sol";
 /**
  * @title Space
  */
-contract SpaceTest is ERC721Tradable {
+contract Space is ERC721Tradable {
     constructor(address _proxyRegistryAddress)
-        ERC721Tradable("SpaceTest", "SPC", _proxyRegistryAddress)
+        ERC721Tradable("Space", "SPC", _proxyRegistryAddress)
     {}
 }

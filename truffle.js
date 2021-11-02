@@ -8,33 +8,40 @@ const getInfuraProvider = network => () =>
     providerOrUrl: `https://${network}.infura.io/v3/${INFURA_CLIENT_ID}`,
   })
 
+const from = '0x247C6Efc48DCcdE4Ed92bD11b6aE6c0dDF05B811'
+
 module.exports = {
   networks: {
     development: {
+      from,
       provider: () =>
         new HDWalletProvider({
           privateKeys: [ETHEREUM_ACCOUNT_KEY],
           providerOrUrl: `http://localhost:8545`,
         }),
       gas: 5000000,
-      network_id: 4224, // Match any network id
+      network_id: 1337, // Match any network id
     },
     polygon: {
+      from,
       provider: getInfuraProvider('polygon-mainnet'),
       gas: 5000000,
       network_id: 137,
     },
     mumbai: {
+      from,
       provider: getInfuraProvider('polygon-mumbai'),
       gas: 5000000,
       network_id: 80001,
     },
     rinkeby: {
+      from,
       provider: getInfuraProvider('rinkeby'),
       gas: 5000000,
       network_id: 4,
     },
     ethereum: {
+      from,
       network_id: 1,
       provider: getInfuraProvider('mainnet'),
       gas: 5000000,
