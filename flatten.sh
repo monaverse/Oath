@@ -1,1 +1,0 @@
-./node_modules/.bin/truffle-flattener contracts/Space.sol > flattened/Space.sol
