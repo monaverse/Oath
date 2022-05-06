@@ -33,6 +33,7 @@ abstract contract ERC721Tradable is
   uint256 private _currentTokenId = 0;
 
   mapping(uint256 => string) private _tokenURIs;
+  mapping(string => bool) private _tokenURIUsed;
 
   constructor(
     string memory _name,
@@ -61,8 +62,10 @@ abstract contract ERC721Tradable is
       _verifySigner(_owner, _tokenURI, _v, _r, _s),
       'owner should sign tokenURI'
     );
+    require(_tokenURIUsed == false, 'tokenURI already used');
     uint256 newTokenId = _currentTokenId.add(1);
     _tokenURIs[newTokenId] = _tokenURI;
+    _tokenURIUsed[_tokenURI] = true;
     _mint(msg.sender, newTokenId);
     _currentTokenId++;
   }
