@@ -8,7 +8,10 @@ import './ERC721Tradable.sol';
  * @title Space
  */
 contract Space is ERC721Tradable {
+
   constructor(address _proxyRegistryAddress)
     ERC721Tradable('Space', 'SPACE', _proxyRegistryAddress)
   {}
+
+  
 }

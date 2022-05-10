@@ -29,8 +29,9 @@ abstract contract ERC721Tradable is
 {
   using SafeMath for uint256;
 
+  address _oldTokenContract = ERC721("0x4ef107a154CB7580c686C239Ed9F92597A42b961");
   address proxyRegistryAddress;
-  uint256 private _currentTokenId = 0;
+  uint256 private _currentTokenId = 1000;
 
   mapping(uint256 => string) private _tokenURIs;
   mapping(string => bool) private _tokenURIUsed;
@@ -62,11 +63,27 @@ abstract contract ERC721Tradable is
       _verifySigner(_owner, _tokenURI, _v, _r, _s),
       'owner should sign tokenURI'
     );
-    require(_tokenURIUsed == false, 'tokenURI already used');
+    require(_tokenURIUsed[_tokenURI] == false, 'tokenURI already used');
     uint256 newTokenId = _currentTokenId.add(1);
     _tokenURIs[newTokenId] = _tokenURI;
     _tokenURIUsed[_tokenURI] = true;
     _mint(msg.sender, newTokenId);
+    _currentTokenId++;
+  }
+
+  function migrateToken(
+    uint _tokenId
+  ) public {
+    // lookup the token from the old contract
+    string _oldTokenURI = _oldTokenContract.tokenURI(_tokenId);
+
+    _oldTokenContract.transfer(_tokenId, address(0));
+    
+    require(_tokenURIUsed[_oldTokenURI] == false, 'tokenURI already used');
+    require(_tokenURIs[_tokenId] == "", 'token already migrated');
+    _tokenURIs[_tokenId] = _oldTokenURI;
+    _tokenURIUsed[_oldTokenURI] = true;
+    _mint(msg.sender, _tokenId);
     _currentTokenId++;
   }
 
