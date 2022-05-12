@@ -29,7 +29,7 @@ abstract contract ERC721Tradable is
 {
   using SafeMath for uint256;
 
-  address _oldTokenContract = ERC721("0x4ef107a154CB7580c686C239Ed9F92597A42b961");
+  ERC721 _oldTokenContract = ERC721(0x4ef107a154CB7580c686C239Ed9F92597A42b961);
   address proxyRegistryAddress;
   uint256 private _currentTokenId = 1000;
 
@@ -59,6 +59,7 @@ abstract contract ERC721Tradable is
     bytes32 _s
   ) public {
     address _owner = owner();
+    require(bytes(_tokenURI).length > 0, "Token URI cannot be empty");
     require(
       _verifySigner(_owner, _tokenURI, _v, _r, _s),
       'owner should sign tokenURI'
@@ -75,12 +76,13 @@ abstract contract ERC721Tradable is
     uint _tokenId
   ) public {
     // lookup the token from the old contract
-    string _oldTokenURI = _oldTokenContract.tokenURI(_tokenId);
+    string memory _oldTokenURI = _oldTokenContract.tokenURI(_tokenId);
+    require(bytes(_oldTokenURI).length > 0, "Old Token URI cannot be empty");
 
-    _oldTokenContract.transfer(_tokenId, address(0));
+    _oldTokenContract.safeTransferFrom(msg.sender, address(0), _tokenId);
     
     require(_tokenURIUsed[_oldTokenURI] == false, 'tokenURI already used');
-    require(_tokenURIs[_tokenId] == "", 'token already migrated');
+    require(bytes(_tokenURIs[_tokenId]).length == 0, 'token already migrated');
     _tokenURIs[_tokenId] = _oldTokenURI;
     _tokenURIUsed[_oldTokenURI] = true;
     _mint(msg.sender, _tokenId);
@@ -102,7 +104,7 @@ abstract contract ERC721Tradable is
   function isApprovedForAll(address owner, address operator)
     public
     view
-    override
+    override(ERC721, IERC721)
     returns (bool)
   {
     if (block.chainid == 1 || block.chainid == 4) {
